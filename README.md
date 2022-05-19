@@ -1,4 +1,4 @@
-## Code for Paper *Urban Mobility Model Reduces Data Demands for Estimating COVID-19 Growth and Informs Reopening Policy*
+## Code for Paper *Model predicted human mobility explains COVID-19 transmission in urban space without behavioral data*
 
 ### System Requirement
 
