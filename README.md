@@ -10,19 +10,28 @@ Memory: 128G DDR4 Memory
 
 #### Tested Software Versions
 Anaconda3-2021.05-Linux-x86_64
+
 conda 4.7.12
+
 python==3.7.4
 
+
 python packages:
+
 numpy==1.21.2
+
 matplotlib==3.4.3
+
 datetime==4.3
+
 pandas==1.1.5
+
+bayesian-optimization==1.2.0 
 
 ### Installation Guide
 Typically, a morden computer with fast internet can complete the installation within 10 mins.
 
-1. Download Anaconda according to [Assemble](https://www.anaconda.com/products/individual-d), which can be done by the fillowing command (newer version of anaconda is also OK)
+1. Download Anaconda according to [Official Website](https://[www.anaconda.com/products/individual-d](https://www.anaconda.com/products/distribution)), which can be done by the fillowing command (newer version of anaconda is also OK)
 ``` bash
 wget -c https://repo.anaconda.com/archive/Anaconda3-2021.05-Linux-x86_64.sh
 ```
