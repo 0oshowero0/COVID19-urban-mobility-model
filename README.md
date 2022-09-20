@@ -42,7 +42,7 @@ setproctitle==1.3.2
 ### Installation Guide
 Typically, a morden computer with fast internet can complete the installation within 10 mins.
 
-1. Download Anaconda according to [Official Website](https://[www.anaconda.com/products/individual-d](https://www.anaconda.com/products/distribution)), which can be done by the fillowing command (newer version of anaconda is also OK)
+1. Download Anaconda according to [Official Website](https://[www.anaconda.com/products/individual-d](https://www.anaconda.com/products/distribution)), which can be done by the fillowing command (newer version of anaconda should also works)
 ``` bash
 wget -c https://repo.anaconda.com/archive/Anaconda3-2021.05-Linux-x86_64.sh
 ```
@@ -113,13 +113,13 @@ if __name__ == "__main__":
 
 ### Reproducing Figures in Main Text
 
-We also include all the experiments in our main text in the ./analyses folder. Since the simulation results are relatively huge, we provide them through this Google Drive link:
+We also include all the experiments in our main text in the ./analyses folder. Since the simulation results are large, we provide them through this Google Drive link:
 
 https://drive.google.com/file/d/1MIF3huKuSJMiQhxfqeTeCya25P8dh16x/view?usp=sharing
 
 **Please put this file into ./analyses folder and decompress it!**
 
-In ./analyses, we provide the source code of our experiemnts (figxx.py), auxilliary data (./analyses/cases for covid cases curve, ./analyses/population for the number of citizens, ./analyses/fig1c_data for Apple Mobility Trends data, ./analyses/fig2b_data for NYC fine-grained infection), and the simulation provided by our model (./analyses/results, decompressed from the Google Drive archive).
+In ./analyses, we provide the source code of our experiemnts (figxx.py), auxilliary data (./analyses/cases for covid cases curves, ./analyses/population for the number of citizens, ./analyses/fig1c_data for Apple Mobility Trends data, ./analyses/fig2b_data for NYC fine-grained infection), and the simulations provided by our model (./analyses/results, decompressed from the Google Drive archive).
 
 As an example, we can reproduce fig.1a through the following procedures:
 
