@@ -1,6 +1,6 @@
-## Code for Paper *Model predicted human mobility explains COVID-19 transmission in urban space without behavioral data*
+# Code for Paper *Model predicted human mobility explains COVID-19 transmission in urban space without behavioral data*
 
-### System Requirement
+## System Requirement
 
 #### Example System Information
 
@@ -13,12 +13,11 @@ Anaconda3-2021.05-Linux-x86_64
 
 conda 4.7.12
 
-python==3.7.4
+python==3.7.0
 
+important python packages:
 
-python packages:
-
-numpy==1.21.2
+numpy==1.21.6
 
 matplotlib==3.4.3
 
@@ -26,7 +25,19 @@ datetime==4.3
 
 pandas==1.1.5
 
-bayesian-optimization==1.2.0 
+bayesian-optimization==1.2.0
+
+scikit-learn==0.24.2
+
+scipy==1.6.3
+
+seaborn==0.11.1
+
+shapely==1.7.1
+
+adjustText==0.7.3
+
+setproctitle==1.3.2
 
 ### Installation Guide
 Typically, a morden computer with fast internet can complete the installation within 10 mins.
@@ -43,7 +54,7 @@ wget -c https://repo.anaconda.com/archive/Anaconda3-2021.05-Linux-x86_64.sh
 
 4. Use the following command to install pre-configured environment through the provided .yml file (you should go to the directory of this project before performing the command)
 ``` bash
-conda env create -f ./anaconda_env.yml
+conda env create -f ./anaconda_env_covid.yml
 ```
 
 5. Finally, activate the installed environment. Now you can run the example code through the following chapter.
@@ -60,11 +71,16 @@ conda deactivate
 (Optional) Command for creating our environment without the .yml file
 ``` bash
 conda create -n covid python==3.7
-pip install numpy ipython pandas  matplotlib setproctitle bayesian-optimization datetime pathlib
+pip install numpy ipython pandas matplotlib setproctitle bayesian-optimization datetime pathlib scikit-learn scipy adjustText seaborn shapely scikit-learn scipy seaborn
 ```
 
-### Run the Codes
-In this repo, we provide all the experiments and the corresponding data to **fit** the epidemic curve in our paper, which contains **20** counties in U.S., **5** in India and **5** in Brazil. These files are located in their own directory. Here, we use the Brazil city Sao Paulo as an example. 
+## Run the Codes
+
+In this repo, we provide the fit process of our model (in ./fit) and the source code for analyses in the main text (in ./analyses).
+
+### Reproducing the model fitting
+
+The fitting process contains all the cities in our experiments, including **20** counties in U.S., **5** cities in India and **5** citeis in Brazil. Here, we provide the procedure to run these codes taking the Brazil city Sao Paulo as an example:
 
 1. Activate the environment
 ``` bash
@@ -72,7 +88,7 @@ conda activate covid
 ```
 2. Go to the corresponding directory
 ``` bash
-cd brazil
+cd ./fit/brazil
 ```
 3. Run the following command
 ``` bash
@@ -93,3 +109,35 @@ MULTI_PROCESSING = 20
 if __name__ == "__main__":
     fit_num = 40
 ```
+
+
+### Reproducing Figures in Main Text
+
+We also include all the experiments in our main text in the ./analyses folder. Since the simulation results are relatively huge, we provide them through this Google Drive link:
+
+https://drive.google.com/file/d/1MIF3huKuSJMiQhxfqeTeCya25P8dh16x/view?usp=sharing
+
+**Please put this file into ./analyses folder and decompress it!**
+
+In ./analyses, we provide the source code of our experiemnts (figxx.py), auxilliary data (./analyses/cases for covid cases curve, ./analyses/population for the number of citizens, ./analyses/fig1c_data for Apple Mobility Trends data, ./analyses/fig2b_data for NYC fine-grained infection), and the simulation provided by our model (./analyses/results, decompressed from the Google Drive archive).
+
+As an example, we can reproduce fig.1a through the following procedures:
+
+
+1. Activate the environment
+``` bash
+conda activate covid
+```
+2. Go to the corresponding directory
+``` bash
+cd ./analyses
+```
+3. Download the model results and decompress
+``` bash
+unzip results.zip
+```
+3. Run the following command
+``` bash
+python fig1a.py
+```
+
