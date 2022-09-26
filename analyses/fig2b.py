@@ -68,7 +68,7 @@ def read_fitted_nyc_inf(fp):
     return inf_rate[:,-1]
 
 
-def match_data(fit_loc, real_loc, old= False, in_ratio=False):
+def match_data(fit_loc, real_loc, old= False):
     fitted_inf_count = read_fitted_nyc_inf(fp=fit_loc)
     nyc_pop = load_pop('./population/nyc_pop.npy').reshape(-1)
     long_min = -74.046699
@@ -87,29 +87,15 @@ def match_data(fit_loc, real_loc, old= False, in_ratio=False):
 
     real_array = []
     fit_array = []
-    if in_ratio:
-        for _, row in x.iterrows():
-            real_array.append(float(row['COVID_CASE_RATE']))
-            plg = row['geometry']
-            fit_count = 0
-            human_count = 0
-            for i in range(len(grid_array)):
-                if plg.contains(grid_array[i]):
-                    fit_count += fitted_inf_count[i]
-                    human_count += nyc_pop[i]
-            if human_count < 1:
-                fit_array.append(0)
-            else:
-                fit_array.append(fit_count/human_count*100000)
-    else:
-        for _, row in x.iterrows():
-            real_array.append(float(row['COVID_CASE_COUNT']))
-            plg = row['geometry']
-            fit_count = 0
-            for i in range(len(grid_array)):
-                if plg.contains(grid_array[i]):
-                    fit_count += fitted_inf_count[i]
-            fit_array.append(fit_count)
+
+    for _, row in x.iterrows():
+        real_array.append(float(row['COVID_CASE_COUNT']))
+        plg = row['geometry']
+        fit_count = 0
+        for i in range(len(grid_array)):
+            if plg.contains(grid_array[i]):
+                fit_count += fitted_inf_count[i]
+        fit_array.append(fit_count)
 
     return np.array(fit_array), np.array(real_array)
 
@@ -118,7 +104,7 @@ def match_data(fit_loc, real_loc, old= False, in_ratio=False):
 
 i = 20
 fit_array, real_array = match_data(fit_loc='./results/fig2b_NYC/out_curves/result_cumu_' + str(i).zfill(2) +'.npy', 
-                                   real_loc='./fig2b_data/coronavirus-data-master/totals/data-by-modzcta.csv',old=True, in_ratio=False)
+                                   real_loc='./fig2b_data/coronavirus-data-master/totals/data-by-modzcta.csv',old=True)
 
 real_rank_idx = np.argsort(real_array)
 real_rank_idx = np.argsort(real_rank_idx)
