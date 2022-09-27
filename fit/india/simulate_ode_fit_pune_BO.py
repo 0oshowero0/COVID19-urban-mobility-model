@@ -130,7 +130,7 @@ def multi_process_fit(process_i,fit_epoch):
     city = City(opt)
     city.setPopCases(pop_data, cases_data_processed[0])
     city.init_blocks(pop_data,manual_init_case=True)
-    S_number, E_number, I_number, R_number, new_spread = city.begin_simulate(len(cases_data_processed[0]),fit=True)
+    S_number, E_number, I_number, R_number, new_spread = city.begin_simulate(len(cases_data_processed[0]))
 
     new_pop = city.get_blk_pop()
     city.setPopCases(new_pop, cases_data_processed[1])
@@ -160,7 +160,7 @@ def multi_process_fit(process_i,fit_epoch):
                 'mobility': optimizer.max['params']['mobility']}
         opts.append(opt)
 
-    new_spread = city.begin_simulate_multi_parted(opts, cases_data_processed,output_dir.joinpath('result_' + str(process_i).zfill(2) + '.png'),fit=False)
+    new_spread = city.begin_simulate_multi_parted(opts, cases_data_processed,output_dir.joinpath('result_' + str(process_i).zfill(2) + '.png'))
 
 
     i = 0 

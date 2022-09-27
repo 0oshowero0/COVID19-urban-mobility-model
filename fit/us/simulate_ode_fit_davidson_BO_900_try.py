@@ -102,7 +102,7 @@ def multi_process_fit(i,fit_epoch):
         city = City(opt)
         city.setPopCases(pop_data, cases_data_first)
         city.init_blocks(pop_data)
-        S_number, E_number, I_number, R_number, new_spread = city.begin_simulate(len(cases_data_first),fit=True)
+        S_number, E_number, I_number, R_number, new_spread = city.begin_simulate(len(cases_data_first))
 
         new_pop = city.get_blk_pop()
         city.setPopCases(new_pop, cases_data_second)
@@ -131,8 +131,8 @@ def multi_process_fit(i,fit_epoch):
         opt2 = {'Pi': optimizer2.max['params']['pi'], 'early_detect': optimizer2.max['params']['early_detect'],
                  'mobility': optimizer2.max['params']['mobility']}
 
-        new_spread,r0 = city.begin_simulate_two_parted(opt1, opt2, cases_data_first, cases_data_second,
-                                                    output_dir.joinpath('result_' + str(i).zfill(2) + '.png'),fit=False)
+        new_spread = city.begin_simulate_two_parted(opt1, opt2, cases_data_first, cases_data_second,
+                                                    output_dir.joinpath('result_' + str(i).zfill(2) + '.png'))
 
 
 
@@ -147,7 +147,6 @@ def multi_process_fit(i,fit_epoch):
             json.dump(opts, f)
 
         np.save(output_dir.joinpath('result_curve_' + str(i).zfill(2) + '.npy'), new_spread.reshape(-1))
-        np.save(output_dir.joinpath('result_r0_' + str(i).zfill(2) + '.npy'), r0.reshape(-1))
 
 
 

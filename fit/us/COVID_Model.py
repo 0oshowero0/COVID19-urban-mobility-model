@@ -77,7 +77,7 @@ class City:
         self.init_blocks(self.pop)
 
         cases_cp = copy.deepcopy(self.cases)
-        S,E,I,R,new_spread = self.begin_simulate(len(cases_cp),fit=True)
+        S,E,I,R,new_spread = self.begin_simulate(len(cases_cp))
         new_spread = new_spread.cumsum()
         new_spread = new_spread.reshape(-1)
 
@@ -98,7 +98,7 @@ class City:
         self.init_blocks(self.pop,True)
 
         cases_cp = copy.deepcopy(self.cases)
-        S,E,I,R,new_spread = self.begin_simulate(len(cases_cp),fit=True)
+        S,E,I,R,new_spread = self.begin_simulate(len(cases_cp))
         new_spread = new_spread.cumsum()
         new_spread = new_spread.reshape(-1)
         new_spread += self.ckpt['total_infect']
@@ -130,7 +130,7 @@ class City:
             self.blocks_matrix = copy.deepcopy(self.ckpt['data'])
 
 
-    def move(self,fit=True):
+    def move(self):
         """ Move individuals according to gravity model. It can achieve no uncertenty at all, at the cost of efficiency
 
         return:
@@ -189,8 +189,6 @@ class City:
         self.blocks_matrix[self.blocks_matrix<0] = 0
         assert np.isnan(self.blocks_matrix).sum() < 1
 
-        if not fit:
-            return np.abs(np.linalg.eigvals(move_matrix)).max()
 
     def spread(self):
         #Step0. Self quarantine
@@ -233,49 +231,31 @@ class City:
 
         return (I_new + E_to_I).sum()
 
-    def move_and_spread(self,fit = True):
-        if fit:
-            self.move()
-        else:
-            move_rho = self.move()
+    def move_and_spread(self):
+        self.move()
         newly_spread = self.spread()
-        if fit:
-            return newly_spread
-        else:
-            return newly_spread,move_rho
+        return newly_spread
 
-    def begin_simulate(self, iter_num, fit = True):
+
+    def begin_simulate(self, iter_num):
         #print('Begin Simulation')
         S = np.zeros((1, iter_num))
         E = np.zeros((1, iter_num))
         I = np.zeros((1, iter_num))
         R = np.zeros((1, iter_num))
         new_spread = np.zeros((1, iter_num))
-        if not fit:
-            move_rho = np.zeros((1, iter_num))
-            for i in range(iter_num):
 
-                S[0, i] = self.blocks_matrix[:, 0].sum()
-                E[0, i] = self.blocks_matrix[:, 1].sum()
-                I[0, i] = self.blocks_matrix[:, 2].sum()
-                R[0, i] = self.blocks_matrix[:, 3].sum()
-                new_spread[0, i], move_rho[0, i] = self.move_and_spread(fit)
+        for i in range(iter_num):
+            S[0, i] = self.blocks_matrix[:, 0].sum()
+            E[0, i] = self.blocks_matrix[:, 1].sum()
+            I[0, i] = self.blocks_matrix[:, 2].sum()
+            R[0, i] = self.blocks_matrix[:, 3].sum()
+            new_spread[0, i] = self.move_and_spread()
 
-            return S, E, I, R, new_spread, move_rho
-        else:
-            for i in range(iter_num):
+        return S, E, I, R, new_spread
 
 
-                S[0, i] = self.blocks_matrix[:, 0].sum()
-                E[0, i] = self.blocks_matrix[:, 1].sum()
-                I[0, i] = self.blocks_matrix[:, 2].sum()
-                R[0, i] = self.blocks_matrix[:, 3].sum()
-                new_spread[0, i] = self.move_and_spread(fit)
-
-            return S, E, I, R, new_spread
-
-
-    def begin_simulate_two_parted(self,opt1,opt2,cases1,cases2,save_path, fit = True):
+    def begin_simulate_two_parted(self,opt1,opt2,cases1,cases2,save_path):
 
         cases1cp = copy.deepcopy(cases1)
         cases2cp = copy.deepcopy(cases2)
@@ -290,10 +270,8 @@ class City:
         self.blocks_matrix = np.zeros((self.units_num, 4))
         self.init_blocks(self.pop)
 
-        if not fit:
-            S1,E1,I1,R1,new_spread1,move_rho1 = self.begin_simulate(len(cases1cp),fit)
-        else:
-            S1, E1, I1, R1, new_spread1 = self.begin_simulate(len(cases1cp), fit)
+
+        S1, E1, I1, R1, new_spread1 = self.begin_simulate(len(cases1cp))
         self.make_check_point(float(new_spread1.cumsum()[-1]))
 
         # second part
@@ -307,18 +285,13 @@ class City:
         self.blocks_matrix = np.zeros((self.units_num, 4))
         self.init_blocks(self.pop,True)
 
-        if not fit:
-            S2,E2,I2,R2,new_spread2,move_rho2 = self.begin_simulate(len(cases2cp),fit)
-        else:
-            S2, E2, I2, R2, new_spread2 = self.begin_simulate(len(cases2cp), fit)
-
+        S2, E2, I2, R2, new_spread2 = self.begin_simulate(len(cases2cp), fit)
 
         S = np.concatenate((S1, S2),axis=1).sum(axis=0)
         E = np.concatenate((E1, E2), axis=1).sum(axis=0)
         I = np.concatenate((I1, I2), axis=1).sum(axis=0)
         R = np.concatenate((R1, R2), axis=1).sum(axis=0)
-        if not fit:
-            rho = np.concatenate((move_rho1, move_rho2), axis=1).sum(axis=0)
+
 
         new_spread = np.concatenate((new_spread1,new_spread2),axis=1).cumsum().reshape(-1)
         cases_cp = np.concatenate((cases1cp,cases2cp))
@@ -338,13 +311,7 @@ class City:
         plt.savefig(fname=save_path, figsize=[8, 6])
         plt.clf()
 
-        if not fit:
-            r0 = self.disease_params['Pi'] * (1 - self.policy_params['early_detect']) * (
-                    1 / self.disease_params['i_to_r'] + 1 / self.disease_params['e_to_i'] * self.disease_params[
-                'PE']) * (rho + S / self.units_num)
-            return new_spread, r0, E, I
-        else:
-            return new_spread
+        return new_spread
 
     def make_check_point(self,total_infect):
         self.ckpt = {'data':self.blocks_matrix,'total_infect':total_infect}
