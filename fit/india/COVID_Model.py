@@ -262,7 +262,7 @@ class City:
             self.blocks_matrix = np.zeros((self.units_num, 4))
             self.init_blocks(self.pop, manual_init_case=(i == 0), ckpt=(i>0))
 
-            S_tmp, E_tmp, I_tmp, R_tmp, new_spread_tmp = self.begin_simulate(len(cases_list[i]), fit)
+            S_tmp, E_tmp, I_tmp, R_tmp, new_spread_tmp = self.begin_simulate(len(cases_list[i]))
             
             if i == 0:
                 S = S_tmp
