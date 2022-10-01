@@ -305,6 +305,7 @@ def draw(opt):
     plt.subplots_adjust(left=0.2, right=0.8, bottom=0.2, top=0.8)
     plt.tight_layout()
 
+    total_R2 = []
     # For US cities
     
     if opt['draw_cumu'] == True:
@@ -354,6 +355,8 @@ def draw(opt):
                 axes[int(floor(i/5)),i%5].set_title('Los Angeles')
             else:
                 axes[int(floor(i/5)),i%5].set_title(city_name_list_us[i])
+
+            total_R2.append(r2_our)
         
         # India City
         for i in range(len(city_name_list_india)):
@@ -391,6 +394,7 @@ def draw(opt):
             axes[4,i%5].ticklabel_format(axis='y',style='sci',scilimits=(0,0))
 
             axes[4,i%5].set_title(city_name_list_india[i])
+            total_R2.append(r2_our)
 
         # Brazil Cities
         for i in range(len(city_name_list_brazil)):
@@ -427,7 +431,7 @@ def draw(opt):
             axes[5,i%5].grid(which='major',ls='--', alpha=0.8)
             axes[5,i%5].ticklabel_format(axis='y',style='sci',scilimits=(0,0))
             axes[5,i%5].set_title(city_name_list_brazil[i])
-
+            total_R2.append(r2_our)
     else:
         # Draw New Cases
         for i in range(len(city_name_list_us)):
@@ -481,7 +485,8 @@ def draw(opt):
                 axes[int(floor(i/5)),i%5].set_title('Los Angeles')
             else:
                 axes[int(floor(i/5)),i%5].set_title(city_name_list_us[i])
-        
+            total_R2.append(r2_our)
+
         # India Cities
         for i in range(len(city_name_list_india)):
 
@@ -523,6 +528,7 @@ def draw(opt):
             axes[4,i%5].ticklabel_format(axis='y',style='sci',scilimits=(0,0))
 
             axes[4,i%5].set_title(city_name_list_india[i])
+            total_R2.append(r2_our)
 
         # Brazil Cities
         for i in range(len(city_name_list_brazil)):
@@ -565,8 +571,13 @@ def draw(opt):
             axes[5,i%5].grid(which='major',ls='--', alpha=0.8)
             axes[5,i%5].ticklabel_format(axis='y',style='sci',scilimits=(0,0))
             axes[5,i%5].set_title(city_name_list_brazil[i])
-    
+            total_R2.append(r2_our)
+
+    print("Average R2")
+    print(np.array(total_R2).mean())
+    print(len(total_R2))
     plt.show()
+    
     #plt.savefig('./fig1a.pdf',dpi=300)
 
 
