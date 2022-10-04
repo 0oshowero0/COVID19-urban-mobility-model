@@ -98,7 +98,7 @@ class City:
         self.init_blocks(self.pop, ckpt = True)
 
         cases_cp = copy.deepcopy(self.cases)
-        S,E,I,R,new_spread = self.begin_simulate(len(cases_cp))
+        S,E,I,R,new_spread = self.begin_simulate(len(cases_cp),fit=True)
         new_spread = new_spread.cumsum()
         new_spread = new_spread.reshape(-1)
         new_spread += self.ckpt['total_infect']
@@ -126,7 +126,7 @@ class City:
             self.blocks_matrix = copy.deepcopy(self.ckpt['data'])
 
 
-    def move(self):
+    def move(self,fit=True):
         """ Move individuals according to gravity model. It can achieve no uncertenty at all, at the cost of efficiency
 
         return:
@@ -185,7 +185,8 @@ class City:
         self.blocks_matrix[self.blocks_matrix<0] = 0
         assert np.isnan(self.blocks_matrix).sum() < 1
 
-
+        if not fit:
+            return np.abs(np.linalg.eigvals(move_matrix)).max()
 
     def spread(self):
         #Step0. Self quarantine
@@ -226,30 +227,67 @@ class City:
 
         return (I_new + E_to_I).sum()
 
-    def move_and_spread(self):
-        self.move()
+    def move_and_spread(self,fit = True):
+        if fit:
+            self.move()
+        else:
+            move_rho = self.move()
         newly_spread = self.spread()
-        return newly_spread
+        if fit:
+            return newly_spread
+        else:
+            return newly_spread,move_rho
 
-
-    def begin_simulate(self, iter_num):
+    def begin_simulate(self, iter_num, fit = True):
         S = np.zeros((1, iter_num))
         E = np.zeros((1, iter_num))
         I = np.zeros((1, iter_num))
         R = np.zeros((1, iter_num))
         new_spread = np.zeros((1, iter_num))
+        if not fit:
+            move_rho = np.zeros((1, iter_num))
+            for i in range(iter_num):
+                # 绘制每次simulate的分布
+                # plt.clf()
+                # S1 = self.blocks_matrix[:,0]
+                # I1 = self.blocks_matrix[:,1]
+                # #plt.plot(S1, label="S")
+                # plt.plot(I1, label="I")
+                # plt.tight_layout()
+                # plt.legend()
+                # plt.savefig(fname='./temp/'+str(i)+'.png', figsize=[8, 6])
+                # plt.clf()
+                #
+                S[0, i] = self.blocks_matrix[:, 0].sum()
+                E[0, i] = self.blocks_matrix[:, 1].sum()
+                I[0, i] = self.blocks_matrix[:, 2].sum()
+                R[0, i] = self.blocks_matrix[:, 3].sum()
+                new_spread[0, i], move_rho[0, i] = self.move_and_spread(fit)
 
-        for i in range(iter_num):
-            S[0, i] = self.blocks_matrix[:, 0].sum()
-            E[0, i] = self.blocks_matrix[:, 1].sum()
-            I[0, i] = self.blocks_matrix[:, 2].sum()
-            R[0, i] = self.blocks_matrix[:, 3].sum()
-            new_spread[0, i] = self.move_and_spread()
+            return S, E, I, R, new_spread, move_rho
+        else:
+            for i in range(iter_num):
+                # 绘制每次simulate的分布
+                # plt.clf()
+                # S1 = self.blocks_matrix[:,0]
+                # I1 = self.blocks_matrix[:,1]
+                # #plt.plot(S1, label="S")
+                # plt.plot(I1, label="I")
+                # plt.tight_layout()
+                # plt.legend()
+                # plt.savefig(fname='./temp/'+str(i)+'.png', figsize=[8, 6])
+                # plt.clf()
+
+                S[0, i] = self.blocks_matrix[:, 0].sum()
+                E[0, i] = self.blocks_matrix[:, 1].sum()
+                I[0, i] = self.blocks_matrix[:, 2].sum()
+                R[0, i] = self.blocks_matrix[:, 3].sum()
+                new_spread[0, i] = self.move_and_spread(fit)
 
             return S, E, I, R, new_spread
 
 
-    def begin_simulate_multi_parted(self,opts_list,cases_list,save_path):
+    def begin_simulate_multi_parted(self,opts_list,cases_list,save_path, fit = True):
 
         epochs = len(opts_list)
 
@@ -262,7 +300,10 @@ class City:
             self.blocks_matrix = np.zeros((self.units_num, 4))
             self.init_blocks(self.pop, manual_init_case=(i == 0), ckpt=(i>0))
 
-            S_tmp, E_tmp, I_tmp, R_tmp, new_spread_tmp = self.begin_simulate(len(cases_list[i]))
+            if not fit:
+                S_tmp, E_tmp, I_tmp, R_tmp, new_spread_tmp, move_rho = self.begin_simulate(len(cases_list[i]),fit)
+            else:
+                S_tmp, E_tmp, I_tmp, R_tmp, new_spread_tmp = self.begin_simulate(len(cases_list[i]), fit)
             
             if i == 0:
                 S = S_tmp
